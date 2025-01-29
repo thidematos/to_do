@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do/services/firebase_auth_api.dart';
+import 'package:to_do/services/firebase_storage_api.dart';
 import 'package:to_do/themes/color_theme.dart';
 import 'package:to_do/utils/validations.dart';
 import 'package:to_do/widgets/login/choose_photo.dart';
@@ -26,6 +30,8 @@ class _SignInState extends State<SignIn> {
 
   String? name = '';
 
+  File? image;
+
   bool isLoading = false;
 
   void submit(BuildContext ctx) async {
@@ -40,11 +46,22 @@ class _SignInState extends State<SignIn> {
       return;
     }
 
+    if (image == null) {
+      showSnackbar(ctx, 'Escolha uma foto de perfil!');
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
 
-    final createdUser = await FirebaseAuthApi.createUser(ctx, email, password);
+    final UserCredential? createdUser =
+        await FirebaseAuthApi.createUser(ctx, email, password);
+
+    if (createdUser == null) return;
+
+    final String imageUrl = await FirebaseStorageApi.putFileOnStorage(
+        'profile_photos', '${createdUser.user!.uid}.jpg', image!);
 
     Navigator.of(ctx).pop();
     setState(() {
@@ -64,7 +81,9 @@ class _SignInState extends State<SignIn> {
             child: Column(
               spacing: 28,
               children: [
-                ChoosePhoto(),
+                ChoosePhoto((File curImage) {
+                  image = curImage;
+                }),
                 TextFormField(
                   validator: (value) => Validations.isNull(value, 'nome'),
                   textCapitalization: TextCapitalization.sentences,

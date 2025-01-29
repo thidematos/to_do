@@ -7,7 +7,8 @@ final kFirebaseInstance = FirebaseAuth.instance;
 class FirebaseAuthApi {
   const FirebaseAuthApi();
 
-  static Future createUser(BuildContext context, email, password) async {
+  static Future<UserCredential?> createUser(
+      BuildContext context, email, password) async {
     print(email);
     print(password);
     try {
@@ -18,6 +19,7 @@ class FirebaseAuthApi {
     } on FirebaseAuthException catch (err) {
       print(err.message);
       showSnackbar(context, 'Houve um erro ao criar o Asimover!');
+      return null;
     }
   }
 

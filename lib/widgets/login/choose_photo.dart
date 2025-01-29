@@ -5,7 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:to_do/themes/color_theme.dart';
 
 class ChoosePhoto extends StatefulWidget {
-  const ChoosePhoto({super.key});
+  const ChoosePhoto(this.onSelectImage, {super.key});
+
+  final Function(File image) onSelectImage;
 
   @override
   State<ChoosePhoto> createState() => _ChoosePhotoState();
@@ -22,8 +24,11 @@ class _ChoosePhotoState extends State<ChoosePhoto> {
       return;
     }
 
+    final file = File(rawImage.path);
+    widget.onSelectImage(file);
+
     setState(() {
-      pickedImage = File(rawImage.path);
+      pickedImage = file;
     });
   }
 
