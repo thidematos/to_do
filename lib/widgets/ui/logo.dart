@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:to_do/themes/letter_theme.dart';
 
 class Logo extends StatelessWidget {
-  const Logo({super.key});
+  Logo({super.key});
 
   @override
   Widget build(BuildContext context) {
