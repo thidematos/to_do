@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:to_do/themes/color_theme.dart';
 import 'package:to_do/themes/letter_theme.dart';
 
-class BecomeAsimover extends StatelessWidget {
-  const BecomeAsimover({super.key});
+class Rocket extends StatelessWidget {
+  Rocket(this.label, this.fontSize, {Color? color, super.key})
+      : labelColor = color ?? ColorTheme.primaryWhite;
+
+  final String label;
+  final double fontSize;
+  final Color labelColor;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +29,12 @@ class BecomeAsimover extends StatelessWidget {
           Positioned(
             child: Center(
               child: Text(
-                'Seja um Asimover'.toUpperCase(),
-                style: LetterTheme.logo.copyWith(fontWeight: FontWeight.w900),
+                label,
+                style: LetterTheme.logo.copyWith(
+                  fontWeight: FontWeight.w900,
+                  fontSize: fontSize,
+                  color: labelColor,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),

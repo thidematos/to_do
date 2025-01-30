@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do/services/firebase_auth_api.dart';
+import 'package:to_do/services/firebase_firestore_api.dart';
 import 'package:to_do/services/firebase_storage_api.dart';
 import 'package:to_do/themes/color_theme.dart';
 import 'package:to_do/utils/validations.dart';
@@ -34,7 +35,7 @@ class _SignInState extends State<SignIn> {
 
   bool isLoading = false;
 
-  void submit(BuildContext ctx) async {
+  void submit() async {
     final bool isValidate = formKey.currentState!.validate();
 
     if (!isValidate) return;
@@ -42,12 +43,12 @@ class _SignInState extends State<SignIn> {
     formKey.currentState!.save();
 
     if (!Validations.verifyPasswords(password!, passwordConfirm!)) {
-      showSnackbar(ctx, 'As senhas não coincidem');
+      showSnackbar(context, 'As senhas não coincidem');
       return;
     }
 
     if (image == null) {
-      showSnackbar(ctx, 'Escolha uma foto de perfil!');
+      showSnackbar(context, 'Escolha uma foto de perfil!');
       return;
     }
 
@@ -56,14 +57,27 @@ class _SignInState extends State<SignIn> {
     });
 
     final UserCredential? createdUser =
-        await FirebaseAuthApi.createUser(ctx, email, password);
+        await FirebaseAuthApi.createUser(context, email, password);
 
     if (createdUser == null) return;
 
     final String imageUrl = await FirebaseStorageApi.putFileOnStorage(
         'profile_photos', '${createdUser.user!.uid}.jpg', image!);
 
-    Navigator.of(ctx).pop();
+    if (imageUrl.isEmpty) {
+      showSnackbar(context, 'Algo deu errado com a sua foto!');
+      return;
+    }
+
+    final bool isSucessfull = await FirebaseFirestoreApi.createUserData(
+        context, imageUrl, email!, name!, area);
+
+    if (!isSucessfull) {
+      showSnackbar(context, 'Erro ao armazenar suas informações');
+      return;
+    }
+
+    Navigator.of(context).pop();
     setState(() {
       isLoading = false;
     });
@@ -151,7 +165,7 @@ class _SignInState extends State<SignIn> {
                     fontWeight: FontWeight.bold,
                     colorLabel: ColorTheme.ctaAccent,
                     onTap: () {
-                      submit(context);
+                      submit();
                     },
                   ),
               ],

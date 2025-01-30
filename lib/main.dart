@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:to_do/screens/loading_screen.dart';
 import 'package:to_do/screens/login_screen.dart';
-import 'package:to_do/screens/to_do_screen.dart';
+import 'package:to_do/screens/projects_screen.dart';
 import 'package:to_do/themes/geral_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
             }
 
             if (snapshot.hasData) {
-              return ToDoScreen();
+              return ProjectsScreen();
             }
 
             return LoginScreen();
